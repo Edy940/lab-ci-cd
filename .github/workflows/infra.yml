@@ -22,6 +22,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
 
     - name: AWS | Configure credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -31,6 +34,12 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ vars.AWS_REGION }}
 
+    - name: Git | Pull latest changes
+      run: |
+        git config pull.rebase true
+        git pull origin ${{ github.ref_name }} || true
+      working-directory: .
+
     - name: Terraform-docs | Generate documentation
       uses: terraform-docs/gh-actions@v1.3.0
       with:
@@ -38,6 +47,9 @@ jobs:
         output-file: README.md
         output-method: inject
         git-push: "true"
+        git-push-user-name: "terraform-docs-bot"
+        git-push-user-email: "terraform-docs@users.noreply.github.com"
+        git-commit-message: "docs: update terraform documentation"
 
     - name: Terraform | Check required version
       run: |
