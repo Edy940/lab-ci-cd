@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ci-cd-app:v1.0.0
+    container_name: ci-cd-app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
